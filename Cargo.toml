@@ -1,0 +1,11 @@
+[package]
+name = "wpm"
+version = "0.1.0"
+edition = "2021"
+description = "wpm — the Weft package registry: verified, content-addressed packages for the Thread. Like npm, but packages cannot lie."
+license = "MIT OR Apache-2.0"
+
+[dependencies]
+weft = { git = "https://github.com/Pixygon/Infinite", package = "weft" }
+serde_json = "1"
+tokio = { version = "1", features = ["rt-multi-thread", "net", "io-util", "macros", "fs", "sync"] }

@@ -1,0 +1,357 @@
+{
+  "name": "weft-form",
+  "exports": {
+    "grid": "weft:1ab0df6eec1107431cbc2b3555bfb7bbac6e01e231c30591c38d716e0c6f8d6b",
+    "grid-point": "weft:d70c8f186c18cfd3fb232440e7a777365c3c45dbc3ce9b8a00a9db38def77487",
+    "lerp": "weft:834f4f0a266c09bd20640e7f0cdee43a85ff28bd62890f740f8a946e08794d1c",
+    "ring": "weft:9e3d74257fbc6f9b292c9f6d51082f7d3a00852d40ac29d2bf1ad144474f11fc",
+    "ring-point": "weft:a9b50b929cf488702b0e84c60be1f4532ad34ad88f3b15b58b73449c9d15b265"
+  },
+  "defs": {
+    "weft:1ab0df6eec1107431cbc2b3555bfb7bbac6e01e231c30591c38d716e0c6f8d6b": {
+      "params": [
+        "Int",
+        "Int",
+        "Fix"
+      ],
+      "ret": {
+        "List": {
+          "Record": {
+            "x": "Fix",
+            "y": "Fix",
+            "z": "Fix"
+          }
+        }
+      },
+      "effects": [],
+      "body": {
+        "Map": {
+          "cap": 1024,
+          "list": {
+            "Iota": {
+              "cap": 1024,
+              "count": {
+                "Var": 2
+              }
+            }
+          },
+          "body": {
+            "Call": [
+              "weft:d70c8f186c18cfd3fb232440e7a777365c3c45dbc3ce9b8a00a9db38def77487",
+              [
+                {
+                  "Var": 0
+                },
+                {
+                  "Var": 2
+                },
+                {
+                  "Var": 1
+                }
+              ]
+            ]
+          }
+        }
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:834f4f0a266c09bd20640e7f0cdee43a85ff28bd62890f740f8a946e08794d1c": {
+      "params": [
+        "Fix",
+        "Fix",
+        "Fix"
+      ],
+      "ret": "Fix",
+      "effects": [],
+      "body": {
+        "Prim": [
+          "f_add",
+          [
+            {
+              "Var": 2
+            },
+            {
+              "Prim": [
+                "f_mul",
+                [
+                  {
+                    "Prim": [
+                      "f_sub",
+                      [
+                        {
+                          "Var": 1
+                        },
+                        {
+                          "Var": 2
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "Var": 0
+                  }
+                ]
+              ]
+            }
+          ]
+        ]
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:9e3d74257fbc6f9b292c9f6d51082f7d3a00852d40ac29d2bf1ad144474f11fc": {
+      "params": [
+        "Int",
+        "Fix"
+      ],
+      "ret": {
+        "List": {
+          "Record": {
+            "x": "Fix",
+            "y": "Fix",
+            "z": "Fix"
+          }
+        }
+      },
+      "effects": [],
+      "body": {
+        "Map": {
+          "cap": 256,
+          "list": {
+            "Iota": {
+              "cap": 256,
+              "count": {
+                "Var": 1
+              }
+            }
+          },
+          "body": {
+            "Call": [
+              "weft:a9b50b929cf488702b0e84c60be1f4532ad34ad88f3b15b58b73449c9d15b265",
+              [
+                {
+                  "Var": 0
+                },
+                {
+                  "Var": 2
+                },
+                {
+                  "Var": 1
+                }
+              ]
+            ]
+          }
+        }
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:a9b50b929cf488702b0e84c60be1f4532ad34ad88f3b15b58b73449c9d15b265": {
+      "params": [
+        "Int",
+        "Int",
+        "Fix"
+      ],
+      "ret": {
+        "Record": {
+          "x": "Fix",
+          "y": "Fix",
+          "z": "Fix"
+        }
+      },
+      "effects": [],
+      "body": {
+        "Let": [
+          {
+            "Prim": [
+              "f_mul",
+              [
+                {
+                  "Prim": [
+                    "f_div",
+                    [
+                      {
+                        "Prim": [
+                          "fix_of_int",
+                          [
+                            {
+                              "Var": 2
+                            }
+                          ]
+                        ]
+                      },
+                      {
+                        "Prim": [
+                          "fix_of_int",
+                          [
+                            {
+                              "Var": 1
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fix": 6283185
+                }
+              ]
+            ]
+          },
+          {
+            "Rec": {
+              "x": {
+                "Prim": [
+                  "f_mul",
+                  [
+                    {
+                      "Var": 1
+                    },
+                    {
+                      "Prim": [
+                        "f_cos",
+                        [
+                          {
+                            "Var": 0
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              },
+              "y": {
+                "Fix": 0
+              },
+              "z": {
+                "Prim": [
+                  "f_mul",
+                  [
+                    {
+                      "Var": 1
+                    },
+                    {
+                      "Prim": [
+                        "f_sin",
+                        [
+                          {
+                            "Var": 0
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:d70c8f186c18cfd3fb232440e7a777365c3c45dbc3ce9b8a00a9db38def77487": {
+      "params": [
+        "Int",
+        "Int",
+        "Fix"
+      ],
+      "ret": {
+        "Record": {
+          "x": "Fix",
+          "y": "Fix",
+          "z": "Fix"
+        }
+      },
+      "effects": [],
+      "body": {
+        "Let": [
+          {
+            "Prim": [
+              "div",
+              [
+                {
+                  "Var": 2
+                },
+                {
+                  "Var": 1
+                }
+              ]
+            ]
+          },
+          {
+            "Rec": {
+              "x": {
+                "Prim": [
+                  "f_mul",
+                  [
+                    {
+                      "Var": 1
+                    },
+                    {
+                      "Prim": [
+                        "fix_of_int",
+                        [
+                          {
+                            "Prim": [
+                              "sub",
+                              [
+                                {
+                                  "Var": 3
+                                },
+                                {
+                                  "Prim": [
+                                    "mul",
+                                    [
+                                      {
+                                        "Var": 0
+                                      },
+                                      {
+                                        "Var": 2
+                                      }
+                                    ]
+                                  ]
+                                }
+                              ]
+                            ]
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              },
+              "y": {
+                "Fix": 0
+              },
+              "z": {
+                "Prim": [
+                  "f_mul",
+                  [
+                    {
+                      "Var": 1
+                    },
+                    {
+                      "Prim": [
+                        "fix_of_int",
+                        [
+                          {
+                            "Var": 0
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "pre": null,
+      "post": null
+    }
+  }
+}

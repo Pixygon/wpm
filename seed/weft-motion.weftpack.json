@@ -1,0 +1,375 @@
+{
+  "name": "weft-motion",
+  "exports": {
+    "clamp01": "weft:6acf68d229da61e6480f73bfb897cc0bfe2fc3d22193d65db872d7fa4e7ff357",
+    "ease-in": "weft:be626f212592d8c396e5ba7abf1bfc565f7fa85121eaaf26b7062cab8d4d1e2d",
+    "ease-out": "weft:65ec896773439b3828c183d7d5f1823e2da489d4f9afe7bae1a39dabd07fcaeb",
+    "osc": "weft:69c9a1088440cab85d0f61552047948f417fa9ac18d5351c5dbb85b71f38f1f6",
+    "pingpong": "weft:de66bd854d0261e67d7ff76b952d2f7fb34dddb71758bc558480c9ee2a2145bb",
+    "smoothstep": "weft:e4b252dd26ee7b0b42d377d02699abda17051d81e31743f6da35085321ce8cd2"
+  },
+  "defs": {
+    "weft:65ec896773439b3828c183d7d5f1823e2da489d4f9afe7bae1a39dabd07fcaeb": {
+      "params": [
+        "Fix"
+      ],
+      "ret": "Fix",
+      "effects": [],
+      "body": {
+        "Let": [
+          {
+            "Prim": [
+              "f_sub",
+              [
+                {
+                  "Fix": 1000000
+                },
+                {
+                  "Call": [
+                    "weft:6acf68d229da61e6480f73bfb897cc0bfe2fc3d22193d65db872d7fa4e7ff357",
+                    [
+                      {
+                        "Var": 0
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          },
+          {
+            "Prim": [
+              "f_sub",
+              [
+                {
+                  "Fix": 1000000
+                },
+                {
+                  "Prim": [
+                    "f_mul",
+                    [
+                      {
+                        "Var": 0
+                      },
+                      {
+                        "Var": 0
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:69c9a1088440cab85d0f61552047948f417fa9ac18d5351c5dbb85b71f38f1f6": {
+      "params": [
+        "Fix"
+      ],
+      "ret": "Fix",
+      "effects": [],
+      "body": {
+        "Prim": [
+          "f_div",
+          [
+            {
+              "Prim": [
+                "f_add",
+                [
+                  {
+                    "Prim": [
+                      "f_sin",
+                      [
+                        {
+                          "Prim": [
+                            "f_mul",
+                            [
+                              {
+                                "Fix": 6283185
+                              },
+                              {
+                                "Var": 0
+                              }
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "Fix": 1000000
+                  }
+                ]
+              ]
+            },
+            {
+              "Fix": 2000000
+            }
+          ]
+        ]
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:6acf68d229da61e6480f73bfb897cc0bfe2fc3d22193d65db872d7fa4e7ff357": {
+      "params": [
+        "Fix"
+      ],
+      "ret": "Fix",
+      "effects": [],
+      "body": {
+        "If": [
+          {
+            "Prim": [
+              "f_lt",
+              [
+                {
+                  "Var": 0
+                },
+                {
+                  "Fix": 0
+                }
+              ]
+            ]
+          },
+          {
+            "Fix": 0
+          },
+          {
+            "If": [
+              {
+                "Prim": [
+                  "f_lt",
+                  [
+                    {
+                      "Fix": 1000000
+                    },
+                    {
+                      "Var": 0
+                    }
+                  ]
+                ]
+              },
+              {
+                "Fix": 1000000
+              },
+              {
+                "Var": 0
+              }
+            ]
+          }
+        ]
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:be626f212592d8c396e5ba7abf1bfc565f7fa85121eaaf26b7062cab8d4d1e2d": {
+      "params": [
+        "Fix"
+      ],
+      "ret": "Fix",
+      "effects": [],
+      "body": {
+        "Let": [
+          {
+            "Call": [
+              "weft:6acf68d229da61e6480f73bfb897cc0bfe2fc3d22193d65db872d7fa4e7ff357",
+              [
+                {
+                  "Var": 0
+                }
+              ]
+            ]
+          },
+          {
+            "Prim": [
+              "f_mul",
+              [
+                {
+                  "Var": 0
+                },
+                {
+                  "Var": 0
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:de66bd854d0261e67d7ff76b952d2f7fb34dddb71758bc558480c9ee2a2145bb": {
+      "params": [
+        "Fix"
+      ],
+      "ret": "Fix",
+      "effects": [],
+      "body": {
+        "Let": [
+          {
+            "Prim": [
+              "f_sub",
+              [
+                {
+                  "Call": [
+                    "weft:6acf68d229da61e6480f73bfb897cc0bfe2fc3d22193d65db872d7fa4e7ff357",
+                    [
+                      {
+                        "Var": 0
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fix": 0
+                }
+              ]
+            ]
+          },
+          {
+            "Let": [
+              {
+                "Prim": [
+                  "f_sub",
+                  [
+                    {
+                      "Fix": 1000000
+                    },
+                    {
+                      "Prim": [
+                        "f_mul",
+                        [
+                          {
+                            "Fix": 2000000
+                          },
+                          {
+                            "Var": 0
+                          }
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              },
+              {
+                "If": [
+                  {
+                    "Prim": [
+                      "f_lt",
+                      [
+                        {
+                          "Var": 0
+                        },
+                        {
+                          "Fix": 0
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "Prim": [
+                      "f_add",
+                      [
+                        {
+                          "Fix": 1000000
+                        },
+                        {
+                          "Var": 0
+                        }
+                      ]
+                    ]
+                  },
+                  {
+                    "Prim": [
+                      "f_sub",
+                      [
+                        {
+                          "Fix": 1000000
+                        },
+                        {
+                          "Var": 0
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "pre": null,
+      "post": null
+    },
+    "weft:e4b252dd26ee7b0b42d377d02699abda17051d81e31743f6da35085321ce8cd2": {
+      "params": [
+        "Fix"
+      ],
+      "ret": "Fix",
+      "effects": [],
+      "body": {
+        "Let": [
+          {
+            "Call": [
+              "weft:6acf68d229da61e6480f73bfb897cc0bfe2fc3d22193d65db872d7fa4e7ff357",
+              [
+                {
+                  "Var": 0
+                }
+              ]
+            ]
+          },
+          {
+            "Prim": [
+              "f_mul",
+              [
+                {
+                  "Prim": [
+                    "f_mul",
+                    [
+                      {
+                        "Var": 0
+                      },
+                      {
+                        "Var": 0
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Prim": [
+                    "f_sub",
+                    [
+                      {
+                        "Fix": 3000000
+                      },
+                      {
+                        "Prim": [
+                          "f_mul",
+                          [
+                            {
+                              "Fix": 2000000
+                            },
+                            {
+                              "Var": 0
+                            }
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      "pre": null,
+      "post": null
+    }
+  }
+}
