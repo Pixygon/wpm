@@ -243,7 +243,6 @@ checksum = "ccf3ec651a847eb01de73ccad15eb7d99f80485de043efb2f370cd654f4ea44b"
 [[package]]
 name = "weft"
 version = "0.1.0"
-source = "git+https://github.com/Pixygon/Infinite#e7575c742b2e6de6ec586223ffd51c6b0824bc44"
 dependencies = [
  "serde",
  "serde_json",
