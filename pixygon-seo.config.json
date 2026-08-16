@@ -1,0 +1,4 @@
+{
+  "_comment": "Routes @pixygon/seo prerenders to real HTML for crawlers & AI answer engines. '/' is always included; it also auto-discovers routes from dist/sitemap.xml. Add every PUBLIC content route here (leave out auth/app/checkout pages). Keep this in sync with your router + sitemap.",
+  "routes": ["/"]
+}
