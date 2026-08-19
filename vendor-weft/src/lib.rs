@@ -29,6 +29,7 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 
+pub mod model_lib;
 pub mod pack;
 pub mod project;
 
@@ -155,6 +156,12 @@ impl EffectKind {
 /// One whole unit in [`Ty::Fix`]'s scale: fixed-point values count millionths.
 pub const FIX_SCALE: i64 = 1_000_000;
 
+/// The longest list a program may build with [`PrimOp::ListCat`]. Bounded
+/// like everything else: a model of ten thousand parts is a mistake, not an
+/// ambition, and the bound is what lets list growth exist at all without
+/// breaking the totality guarantee.
+pub const MAX_LIST: usize = 8192;
+
 /// Pure operations on the deterministic core.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
@@ -201,6 +208,12 @@ pub enum PrimOp {
     FSin,
     /// Fixed-point cosine — `FSin(x + π/2)`.
     FCos,
+    /// Append two lists of the same element type — the composition primitive.
+    /// Weft has no recursive types, so a *tree* cannot be a value; a list of
+    /// uniform records can, and `ListCat` is what lets one program's parts
+    /// join another's (the modeling library is built on it). Appended after
+    /// `FCos`: discriminant order is the encoding, so existing hashes hold.
+    ListCat,
 }
 
 /// The term graph. Variables are de Bruijn indices (0 = innermost binder);
@@ -690,6 +703,15 @@ fn check(
                         other => Err(WeftError::Type(format!("len expects a list, got {other:?}"))),
                     };
                 }
+                // ListCat: List(T) × List(T) → List(T) — same T, no coercion.
+                ListCat => {
+                    return match ats.as_slice() {
+                        [Ty::List(a), Ty::List(b)] if a == b => Ok(Ty::List(a.clone())),
+                        other => Err(WeftError::Type(format!(
+                            "list-cat expects two lists of the same element type, got {other:?}"
+                        ))),
+                    };
+                }
             };
             if ats != want {
                 return Err(WeftError::Type(format!("{op:?} expects {want:?}, got {ats:?}")));
@@ -880,7 +902,26 @@ fn eval(t: &Term, env: &mut Vec<Value>, m: &Module, fuel: &mut u64) -> Result<Va
         }
         Term::Prim(op, args) => {
             let vals: Result<Vec<Value>, _> = args.iter().map(|a| eval(a, env, m, fuel)).collect();
-            prim(*op, vals?)
+            let vals = vals?;
+            // `ListCat` is the one prim whose *result* can grow: fold it over
+            // itself and a list doubles each round. Charge fuel by the length
+            // produced (work costs fuel — the same law as everywhere else) and
+            // cap the length, so growth is bounded by the same static budget
+            // the verifier proved. Totality never bends.
+            if *op == PrimOp::ListCat {
+                let n = match (vals.first(), vals.get(1)) {
+                    (Some(Value::List(a)), Some(Value::List(b))) => a.len() + b.len(),
+                    _ => 0,
+                } as u64;
+                if n > *fuel {
+                    return Err(WeftError::FuelExhausted);
+                }
+                *fuel -= n;
+                if n as usize > MAX_LIST {
+                    return Err(WeftError::FuelExhausted);
+                }
+            }
+            prim(*op, vals)
         }
         Term::Rec(fields) => {
             let mut out = BTreeMap::new();
@@ -979,6 +1020,11 @@ fn prim(op: PrimOp, vals: Vec<Value>) -> Value {
         (Len, [List(xs)]) => Int(xs.len() as i64),
         (FSin, [Fix(a)]) => Fix(fix_sin(*a)),
         (FCos, [Fix(a)]) => Fix(fix_sin(a.wrapping_add(FIX_PI / 2))),
+        (ListCat, [List(a), List(b)]) => {
+            let mut out = a.clone();
+            out.extend(b.iter().cloned());
+            List(out)
+        }
         _ => unreachable!("verified"),
     }
 }
@@ -1418,6 +1464,80 @@ mod tests {
         assert_eq!(ok.value, Value::Int(6));
         let bad = eval_call(&m, m.entry, vec![Value::Int(-1)], cert.fuel_bound + 16);
         assert_eq!(bad.unwrap_err(), WeftError::ContractViolated("pre"));
+    }
+
+    #[test]
+    fn list_cat_composes_and_stays_bounded() {
+        // Composition: two lists of the same element type join.
+        let cat = Def {
+            params: vec![Ty::List(Box::new(Ty::Int)), Ty::List(Box::new(Ty::Int))],
+            ret: Ty::List(Box::new(Ty::Int)),
+            effects: BTreeSet::new(),
+            body: Term::Prim(PrimOp::ListCat, vec![Term::Var(1), Term::Var(0)]),
+            pre: None,
+            post: None,
+        };
+        let m = Module::build(vec![cat], 0).unwrap();
+        let out = eval_call(
+            &m,
+            m.entry,
+            vec![
+                Value::List(vec![Value::Int(1), Value::Int(2)]),
+                Value::List(vec![Value::Int(3)]),
+            ],
+            10_000,
+        )
+        .unwrap();
+        assert_eq!(
+            out.value,
+            Value::List(vec![Value::Int(1), Value::Int(2), Value::Int(3)])
+        );
+
+        // Mismatched element types don't verify.
+        let bad = Def {
+            params: vec![Ty::List(Box::new(Ty::Int)), Ty::List(Box::new(Ty::Text))],
+            ret: Ty::List(Box::new(Ty::Int)),
+            effects: BTreeSet::new(),
+            body: Term::Prim(PrimOp::ListCat, vec![Term::Var(1), Term::Var(0)]),
+            pre: None,
+            post: None,
+        };
+        assert!(Module::build(vec![bad], 0).is_err() || verify_module(&Module::build(vec![Def {
+            params: vec![Ty::List(Box::new(Ty::Int)), Ty::List(Box::new(Ty::Text))],
+            ret: Ty::List(Box::new(Ty::Int)),
+            effects: BTreeSet::new(),
+            body: Term::Prim(PrimOp::ListCat, vec![Term::Var(1), Term::Var(0)]),
+            pre: None,
+            post: None,
+        }], 0).unwrap()).is_err());
+
+        // Growth costs fuel: doubling a list inside a fold exhausts the
+        // budget instead of exploding memory. (16 doublings of a 4-element
+        // seed would be 262144 elements; the fuel charge stops it long before.)
+        let doubling = Def {
+            params: vec![Ty::List(Box::new(Ty::Int))],
+            ret: Ty::List(Box::new(Ty::Int)),
+            effects: BTreeSet::new(),
+            body: Term::Fold {
+                cap: 16,
+                list: Term::Iota { cap: 16, count: Box::new(Term::Int(16)) }.into(),
+                init: Box::new(Term::Var(0)),
+                // acc = Var 1, element = Var 0 → acc ++ acc
+                body: Box::new(Term::Prim(
+                    PrimOp::ListCat,
+                    vec![Term::Var(1), Term::Var(1)],
+                )),
+            },
+            pre: None,
+            post: None,
+        };
+        let m = Module::build(vec![doubling], 0).unwrap();
+        let seed = Value::List(vec![Value::Int(0); 4]);
+        let r = eval_call(&m, m.entry, vec![seed], 5_000);
+        assert!(
+            matches!(r, Err(WeftError::FuelExhausted)),
+            "runaway list growth is stopped by fuel, not by memory: {r:?}"
+        );
     }
 
     #[test]

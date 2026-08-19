@@ -127,6 +127,7 @@ fn prim_name(p: PrimOp) -> &'static str {
         PrimOp::Len => "len",
         PrimOp::FSin => "sin",
         PrimOp::FCos => "cos",
+        PrimOp::ListCat => "++list",
     }
 }
 
