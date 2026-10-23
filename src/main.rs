@@ -11,6 +11,7 @@
 //! Routes (HTTP/1.1, TLS at the proxy):
 //!   GET  /                                       → index JSON (all packages)
 //!   GET  /healthz                                → 200 ok
+//!   GET  /favicon.ico                            → the icon (browsers ask for it)
 //!   GET  /packages/<name>.weftpack.json          → the package
 //!   GET  /.well-known/weft/<name>.weftpack.json  → same (the Thread convention)
 //!   POST /publish                                → body = package JSON;
@@ -110,6 +111,7 @@ async fn handle(mut stream: TcpStream, app: Arc<App>) -> std::io::Result<()> {
     match (method, path.as_str()) {
         ("GET", "/healthz") => respond(&mut stream, 200, "text/plain", b"ok").await,
         ("GET", "/robots.txt") => respond(&mut stream, 200, "text/plain; charset=utf-8", ROBOTS.as_bytes()).await,
+        ("GET", "/favicon.ico") => respond(&mut stream, 200, "image/x-icon", FAVICON).await,
         ("GET", "/sitemap.xml") => {
             let body = sitemap_xml(&listing(&app.data));
             respond(&mut stream, 200, "application/xml", body.as_bytes()).await
@@ -516,3 +518,39 @@ fn sitemap_xml(list: &[Listed]) -> String {
 }
 
 const ROBOTS: &str = "User-agent: *\nAllow: /\n\nSitemap: https://wpm.pixygon.io/sitemap.xml\n";
+
+/// The shelf's mark, baked into the binary. The root is JSON and cannot
+/// declare an icon, so browsers fall back to /favicon.ico and logged a 404.
+const FAVICON: &[u8] = include_bytes!("../public/favicon.ico");
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn favicon_is_a_real_ico() {
+        // ICO header: reserved 0, type 1 (icon), then at least one image.
+        assert_eq!(&FAVICON[..4], &[0, 0, 1, 0]);
+        assert!(u16::from_le_bytes([FAVICON[4], FAVICON[5]]) >= 1);
+    }
+
+    #[tokio::test]
+    async fn favicon_route_answers_200_with_the_icon() {
+        let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let addr = listener.local_addr().unwrap();
+        let app = Arc::new(App { data: std::env::temp_dir(), token: None });
+        tokio::spawn(async move {
+            let (s, _) = listener.accept().await.unwrap();
+            handle(s, app).await.unwrap();
+        });
+        let mut c = TcpStream::connect(addr).await.unwrap();
+        c.write_all(b"GET /favicon.ico HTTP/1.1\r\nhost: x\r\n\r\n").await.unwrap();
+        let mut out = Vec::new();
+        c.read_to_end(&mut out).await.unwrap();
+        let head_end = find(&out, b"\r\n\r\n").unwrap() + 4;
+        let head = String::from_utf8_lossy(&out[..head_end]);
+        assert!(head.starts_with("HTTP/1.1 200 OK"), "{head}");
+        assert!(head.contains("content-type: image/x-icon"), "{head}");
+        assert_eq!(&out[head_end..], FAVICON);
+    }
+}

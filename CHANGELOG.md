@@ -4,6 +4,14 @@ All notable changes to **wpm**. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); this file is
 materialized from the Pixygon Changelog API — edit there, not here.
 
+## [0.7.0] — 2026-10-23
+
+_The site now serves a favicon for browser tabs and bookmarks._
+
+### Added
+- Added a favicon, so the site now shows an icon in browser tabs and bookmarks instead of a broken image or blank placeholder.
+
+
 ## [0.5.0] — 2026-09-10
 
 ### Added
